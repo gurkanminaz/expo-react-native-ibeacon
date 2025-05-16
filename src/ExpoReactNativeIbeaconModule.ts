@@ -1,12 +1,5 @@
-import { NativeModule, requireNativeModule } from 'expo';
+import { requireNativeModule } from "expo-modules-core";
 
-import { ExpoReactNativeIbeaconModuleEvents } from './ExpoReactNativeIbeacon.types';
-
-declare class ExpoReactNativeIbeaconModule extends NativeModule<ExpoReactNativeIbeaconModuleEvents> {
-  PI: number;
-  hello(): string;
-  setValueAsync(value: string): Promise<void>;
-}
-
-// This call loads the native module object from the JSI.
-export default requireNativeModule<ExpoReactNativeIbeaconModule>('ExpoReactNativeIbeacon');
+// It loads the native module object from the JSI or falls back to
+// the bridge module (from NativeModulesProxy) if the remote debugger is on.
+export default requireNativeModule("ExpoReactNativeIbeacon");
