@@ -92,6 +92,7 @@ let request = UNNotificationRequest(
      case .poweredOn: msg = "poweredOn"
      @unknown default: msg = "unknown"
      }
+       
      RNEventEmitter.emitter.sendEvent(withName: "onBluetoothStateChanged", body: ["state": msg]) // Send Bluetooth state change event to React Native
    }
 
@@ -142,6 +143,12 @@ let request = UNNotificationRequest(
        RNEventEmitter.emitter.sendEvent(withName: "onExitRegion", body: ["region": beaconRegion.identifier])
      }
    }
+    
+    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
+        if let beaconRegion = region as? CLBeaconRegion {
+            RNEventEmitter.emitter.sendEvent(withName: "onDetermineState", body: ["region": beaconRegion.identifier, "state": determineStateToString(state)])
+        }
+    }
 
    // Handle detection of beacons in the region
    func locationManager(
@@ -156,29 +163,10 @@ let request = UNNotificationRequest(
          "rssi": beacon.rssi, // Beacon signal strength
        ]
      }
-     if beacons.count > 0 {
-       let accuracyL = calc(rssi: Double(beacons[0].rssi))
-       print("Beacons detected: \(accuracyL)  -  \(beacons[0].accuracy)  - \(proximityToString(beacons[0].proximity))")
-     }
      
      RNEventEmitter.emitter.sendEvent(withName: "onBeaconsDetected", body: beaconArray)
    }
   
-  func calc(rssi: Double) -> Double {
-    if (rssi == 0) {
-        return -1.0; // if we cannot determine accuracy, return -1.
-      }
-    let txPower = -59.0;
-    let ratio = rssi*1.0/txPower;
-    if (ratio < 1.0) {
-        return pow(Double(ratio),10);
-    }
-    else {
-      let accuracy =  (0.89976)*pow(Double(ratio),7.7095) + 0.111;
-      return accuracy;
-    }
-  }
-
    // Handle geolocation permission changes
    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
      if #available(iOS 14.0, *) {
@@ -219,4 +207,13 @@ let request = UNNotificationRequest(
     @unknown default: return "unknown"
     }
   }
+    
+    private func determineStateToString(_ status: CLRegionState) -> String {
+      switch status {
+      case .inside: return "inside"
+      case .outside: return "outside"
+      case .unknown: return "unknown"
+      @unknown default: return "unknown"
+      }
+    }
 }

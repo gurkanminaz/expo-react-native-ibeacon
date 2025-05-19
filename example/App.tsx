@@ -1,10 +1,8 @@
 import * as IBeacon from "expo-react-native-ibeacon";
 import { useEffect, useState } from "react";
-import { Button, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function App() {
-  const [theme, setTheme] = useState<string>(IBeacon.getTheme());
-
   const [inRegion, setInRegion] = useState(false);
   const [distance, setDistance] = useState(0.0);
 
@@ -23,48 +21,59 @@ export default function App() {
         ) {
           let distance = beacons[0].distance.toFixed(1);
           setDistance(distance);
-          console.log("onBeaconsDetected3", beacons[0].distance);
+          console.log("onBeaconsDetected", beacons[0].distance);
         }
       }
     );
     return () => subscription.remove();
   }, []);
 
-  // useEffect(() => {
-  //       eventEmittedFromIOS.addListener("onEnterRegion", beacons => {
-  //           if (beacons.length > 0 && beacons[0].distance) {
-  //               console.log("onEnterRegion", beacons[0].distance);
-  //           }
-  //           setInRegion(true);
-  //       });
-  //   }, []);
+  useEffect(() => {
+    beaconManager.addBeaconsEnterRegionListener((beacons: any) => {
+      if (beacons.length > 0 && beacons[0].distance) {
+        console.log("onEnterRegion", beacons[0].distance);
+      }
+      setInRegion(true);
+    });
+  }, []);
 
   useEffect(() => {
-    const subscription = IBeacon.addThemeListener(({ theme: newTheme }) => {
-      setTheme(newTheme);
+    beaconManager.addBeaconsExitRegionListener((beacons: any) => {
+      if (beacons.length > 0 && beacons[0].distance) {
+        console.log("onExitRegion", beacons[0].distance);
+      }
+      setInRegion(false);
     });
+  }, []);
 
-    return () => subscription.remove();
-  }, [setTheme]);
+  // useEffect(() => {
+  //   const subscription = beaconManager.addBeaconsBluetoothStateChangedListener(
+  //     (event) => {
+  //       console.log("onBluetoothStateChanged", event);
+  //     }
+  //   );
 
-  const nextTheme = theme === "dark" ? "light" : "dark";
+  //   return () => subscription.remove();
+  // }, []);
+
+  // useEffect(() => {
+  //   const subscription = beaconManager.addBeaconsDetermineStateListener(
+  //     (event) => {
+  //       console.log("onDetermineState", event);
+  //     }
+  //   );
+
+  //   return () => subscription.remove();
+  // }, []);
   return (
     <View
       style={{
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: theme === "dark" ? "#000" : "#fff",
+        backgroundColor: "#000",
       }}
     >
-      <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>
-        Theme: {IBeacon.getTheme()}
-      </Text>
-
-      <Button
-        title={`Set theme to ${nextTheme}`}
-        onPress={() => IBeacon.setTheme(nextTheme)}
-      />
       <View
         style={{
           alignItems: "center",
@@ -75,9 +84,9 @@ export default function App() {
         }}
       >
         <Text style={{ color: "#fff", fontWeight: 600, fontSize: 16 }}>
-          {inRegion
-            ? "In Area: " + distance + " m"
-            : "Out of Area: " + distance + " m"}
+          {inRegion && distance
+            ? "In Area: " + distance.toString() + " m"
+            : "Out of Area: " + distance.toString() + " m"}
         </Text>
       </View>
     </View>

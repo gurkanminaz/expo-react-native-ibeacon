@@ -2,33 +2,10 @@ import { EventSubscription } from "expo-modules-core";
 import ExpoReactNativeIbeaconModule from "./ExpoReactNativeIbeaconModule";
 import { NativeModules, NativeEventEmitter } from "react-native";
 
-export type Theme = "light" | "dark" | "system";
-
-export type ThemeChangeEvent = {
-  theme: string;
-};
-
-export function addThemeListener(
-  listener: (event: ThemeChangeEvent) => void
-): EventSubscription {
-  return ExpoReactNativeIbeaconModule.addListener("onChangeTheme", listener);
-}
-
-export function getTheme(): string {
-  return ExpoReactNativeIbeaconModule.getTheme();
-}
-
-export function setTheme(theme: string): void {
-  return ExpoReactNativeIbeaconModule.setTheme(theme);
-}
-
 export type BeaconsChangeEvent = {
   beacons: string[];
 };
 
-// export function requestAlwaysAuthorization(): void {
-//   return ExpoReactNativeIbeaconModule.requestAlwaysAuthorization();
-// }
 export function startScanning(beacon: string): void {
   return ExpoReactNativeIbeaconModule.startScanning(beacon, null);
 }
@@ -50,13 +27,34 @@ export const BeaconScanner = () => {
     BeaconManager.stopScanning(uuid);
   };
 
-  // const addBeaconsDetectedListener = (listener: (event: BeaconsChangeEvent) => void)=> {
-  //   eventEmittedFromIOS.addListener("onBeaconsDetected", listener)
-  // }
   function addBeaconsDetectedListener(
     listener: (event: BeaconsChangeEvent) => void
   ): EventSubscription {
     return eventEmittedFromIOS.addListener("onBeaconsDetected", listener);
+  }
+
+  function addBeaconsEnterRegionListener(
+    listener: (event: BeaconsChangeEvent) => void
+  ): EventSubscription {
+    return eventEmittedFromIOS.addListener("onEnterRegion", listener);
+  }
+
+  function addBeaconsExitRegionListener(
+    listener: (event: BeaconsChangeEvent) => void
+  ): EventSubscription {
+    return eventEmittedFromIOS.addListener("onExitRegion", listener);
+  }
+
+  function addBeaconsBluetoothStateChangedListener(
+    listener: (event: { state: string }) => void
+  ): EventSubscription {
+    return eventEmittedFromIOS.addListener("onBluetoothStateChanged", listener);
+  }
+
+  function addBeaconsDetermineStateListener(
+    listener: (event: { state: string }) => void
+  ): EventSubscription {
+    return eventEmittedFromIOS.addListener("onDetermineState", listener);
   }
 
   return {
@@ -64,5 +62,9 @@ export const BeaconScanner = () => {
     startScanning,
     stopScanning,
     addBeaconsDetectedListener,
+    addBeaconsEnterRegionListener,
+    addBeaconsExitRegionListener,
+    addBeaconsBluetoothStateChangedListener,
+    addBeaconsDetermineStateListener,
   };
 };

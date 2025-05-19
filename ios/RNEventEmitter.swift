@@ -14,6 +14,6 @@ open class RNEventEmitter:RCTEventEmitter{
   }
 
   open override func supportedEvents() -> [String] {
-    ["onBeaconsDetected","onEnterRegion", "onExitRegion", "onBluetoothStateChanged"]  // etc.
+    ["onBeaconsDetected","onEnterRegion", "onExitRegion", "onBluetoothStateChanged", "onDetermineState"]  // etc.
   }
 }
