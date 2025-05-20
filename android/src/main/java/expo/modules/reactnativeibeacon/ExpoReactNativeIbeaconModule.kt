@@ -1,39 +1,33 @@
 package expo.modules.reactnativeibeacon
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.types.Enumerable
+
+data class Beacon(val distance: Float)
 
 class ExpoReactNativeIbeaconModule : Module() {
   override fun definition() = ModuleDefinition {
     
     Name("ExpoReactNativeIbeacon")
 
-    Events("onChangeTheme")
+    Events("onBeaconsDetected")
+    Events("onEnterRegion")
+    Events("onExitRegion")
+    Events("onBluetoothStateChanged")
+    Events("onDetermineState")
 
-    Function("setTheme") { theme: Theme ->
-      getPreferences().edit().putString("theme", theme.value).commit()
-      this@ExpoSettingsModule.sendEvent("onChangeTheme", bundleOf("theme" to theme.value))
+    Function("requestAlwaysAuthorization") {
+      val beacons: Array<Beacon> = arrayOf(
+        Beacon(1.2F)
+      )
+      //this@ExpoReactNativeIbeaconModule.sendEvent("onBeaconsDetected", bundleOf("beacons" to null))
+      return@Function "system"
     }
 
-    Function("getTheme") {
-      return@Function getPreferences().getString("theme", Theme.SYSTEM.value)
+    Function("startScanning") { 
+      return@Function "startScanning"
     }
   }
 
-  private val context
-  get() = requireNotNull(appContext.reactContext)
-
-  private fun getPreferences(): SharedPreferences {
-    return context.getSharedPreferences(context.packageName + ".settings", Context.MODE_PRIVATE)
-  }
-}
-
-enum class Theme(val value: String) : Enumerable {
-  LIGHT("light"),
-  DARK("dark"),
-  SYSTEM("system")
 }

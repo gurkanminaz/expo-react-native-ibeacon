@@ -1,6 +1,6 @@
 import { EventSubscription } from "expo-modules-core";
 import ExpoReactNativeIbeaconModule from "./ExpoReactNativeIbeaconModule";
-import { NativeModules, NativeEventEmitter } from "react-native";
+import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
 export type BeaconsChangeEvent = {
   beacons: string[];
@@ -16,11 +16,19 @@ export const BeaconScanner = () => {
     NativeModules.RNEventEmitter
   );
   const requestAlwaysAuthorization = () => {
-    BeaconManager.requestAlwaysAuthorization();
+    if (Platform.OS === "android") {
+      ExpoReactNativeIbeaconModule.requestAlwaysAuthorization();
+    } else {
+      BeaconManager.requestWhenInUseAuthorization();
+    }
   };
 
   const startScanning = (uuid: string) => {
-    BeaconManager.startScanning(uuid, null);
+    if (Platform.OS === "android") {
+      ExpoReactNativeIbeaconModule.startScanning();
+    } else {
+      BeaconManager.startScanning(uuid, null);
+    }
   };
 
   const stopScanning = (uuid: string) => {
