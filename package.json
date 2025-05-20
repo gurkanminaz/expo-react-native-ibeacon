@@ -1,7 +1,7 @@
 {
   "name": "expo-react-native-ibeacon",
-  "version": "0.1.0",
-  "description": "My new module",
+  "version": "0.0.1",
+  "description": "IBeacon module for Expo and React Native",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -25,7 +25,7 @@
   "bugs": {
     "url": "https://github.com/gurkanminaz/expo-react-native-ibeacon.git/issues"
   },
-  "author": "Gürkan Minaz <gurkanminaz@gmail.com> (gurkanminaz)",
+  "author": "Gurkan Minaz",
   "license": "MIT",
   "homepage": "https://github.com/gurkanminaz/expo-react-native-ibeacon.git#readme",
   "dependencies": {},
