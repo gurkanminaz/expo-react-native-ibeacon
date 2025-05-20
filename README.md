@@ -1,34 +1,51 @@
 # expo-react-native-ibeacon
 
-IBeacon module for Expo and React Native
+iBeacon support for React Native. The API is very similar to the CoreLocation Objective-C one with the only major difference that regions are plain JavaScript objects. Beacons don't work in the iOS simulator.
 
-# API documentation
+Looking for an Android version? Try out
 
-- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/react-native-ibeacon/)
-- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/react-native-ibeacon/)
+@mmazzarolo AltBeacon
+@octavioturra's AltBeacon
 
-# Installation in managed Expo projects
+# Support
+This module supports all iBeacon-compatible devices. 
 
-For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
+Install using npm with npm i expo-react-native-ibeacon. React Native >=0.79.0 is needed.
 
-### Add the package to your npm dependencies
 
+### Usagee
+
+```javascript
+import * as IBeacon from "expo-react-native-ibeacon";
+import { useEffect, useState } from "react";
+
+const [distance, setDistance] = useState(0.0);
+const beaconManager = IBeacon.BeaconScanner();
+beaconManager.requestAlwaysAuthorization();
+beaconManager.startScanning("XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX");
+
+  useEffect(() => {
+    const subscription = beaconManager.addBeaconsDetectedListener(
+      (beacons: any) => {
+        if (
+          beacons.length > 0 &&
+          beacons[0].distance &&
+          beacons[0].distance > 0 &&
+          beacons[0].distance.toFixed(1) !== distance
+        ) {
+          let distance = beacons[0].distance.toFixed(1);
+          setDistance(distance);
+        }
+      }
+    );
+    return () => subscription.remove();
+  }, []);
 ```
-npm install expo-react-native-ibeacon
-```
 
-### Configure for Android
-
-
-
-
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
 
 # Contributing
 
